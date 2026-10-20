@@ -30,10 +30,50 @@
         </svg>
         <span class="languages__title-text" id="current-lang-text">العربية</span>
     </p>
-    <div class="languages__list">
-        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('ar')">العربية</a></div>
-        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('en')">English</a></div>
+    <div class="languages__list languages__grid-custom">
+        <!-- Column 1 -->
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('pt')">Português</a></div>
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('pl')">Polski</a></div>
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('th')">Thai</a></div>
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('zh')">中文</a></div>
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('ko')">한국어</a></div>
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('ro')">Română</a></div>
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('el')">ελληνικά</a></div>
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('fil')">Pilipinas</a></div>
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('kk')">Қазақша</a></div>
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('ig')">Igbo</a></div>
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('tg')">Тоҷикӣ</a></div>
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('hy')">հայերեն</a></div>
+
+        <!-- Column 2 -->
         <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('ru')">Русский</a></div>
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('it')">Italiano</a></div>
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('fr')">Français</a></div>
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('ms')">Malay</a></div>
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('ja')">日本語</a></div>
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('sr')">Српски</a></div>
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('hi')">हिन्दी</a></div>
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('uk')">Українська</a></div>
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('ky')">Кыргызча</a></div>
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('yo')">Yorùbá</a></div>
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('af')">Afrikaans</a></div>
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('uz')">Ўзбекча</a></div>
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('ur')">اردو</a></div>
+
+        <!-- Column 3 -->
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('en')">English</a></div>
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('es')">Español</a></div>
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('id')">Indonesian</a></div>
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('vi')">Tiếng Việt</a></div>
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('tr')">Türkçe</a></div>
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('fa')">فارسی</a></div>
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('hr')">Hrvatski</a></div>
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('bn')">বাংলা</a></div>
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('sw')">Kiswahili</a></div>
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('nl')">Nederlands</a></div>
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('ha')">Hausa</a></div>
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('az')">Azərbaycan</a></div>
+        <div class="languages__item"><a class="languages__link" href="#" onclick="changeLanguage('ka')">ქართული</a></div>
     </div>
 </div>
 
@@ -229,35 +269,33 @@ const translations = {
 };
 
 function changeLanguage(lang) {
-    const t = translations[lang];
-    if (!t) return;
-    
+    const t = translations[lang] || translations['en'];
     document.getElementById('page-title').innerText = t.title;
     document.documentElement.lang = lang;
     document.documentElement.dir = t.dir;
     
     const bodyTag = document.getElementById('body-tag');
-    bodyTag.className = `blank page-login ${t.langClass}`;
+    bodyTag.className = `blank page-login ${t.langClass || 'en-lang'}`;
     
-    document.getElementById('current-lang-text').innerText = t.langName;
-    document.getElementById('back-home-link').innerText = t.backHome;
-    document.getElementById('main-heading').innerText = t.mainHeading;
-    document.getElementById('no-account-text').innerText = t.noAccount;
-    document.getElementById('register-link').innerText = t.register;
+    // Find text content dynamically from clicked language anchor
+    event.preventDefault();
+    document.getElementById('current-lang-text').innerText = event.target.innerText;
     
-    const emailInput = document.getElementById('email');
-    emailInput.placeholder = t.emailPlaceholder;
-    document.getElementById('email-label').innerHTML = `${t.emailPlaceholder.replace(' *', '')} <span>*</span>`;
-    
-    const passwordInput = document.getElementById('password');
-    passwordInput.placeholder = t.passwordPlaceholder;
-    document.getElementById('password-label').innerHTML = `${t.passwordPlaceholder.replace(' *', '')} <span>*</span>`;
-    
-    document.getElementById('remember-text').innerText = t.remember;
-    document.getElementById('recovery-link-text').innerText = t.recovery;
-    document.getElementById('submit-btn-text').innerText = t.submit;
-    document.getElementById('social-title-text').innerText = t.socialTitle;
-    document.getElementById('recaptcha-text').innerText = t.recaptcha;
+    if(t) {
+        document.getElementById('back-home-link').innerText = t.backHome;
+        document.getElementById('main-heading').innerText = t.mainHeading;
+        document.getElementById('no-account-text').innerText = t.noAccount;
+        document.getElementById('register-link').innerText = t.register;
+        document.getElementById('email').placeholder = t.emailPlaceholder;
+        document.getElementById('email-label').innerHTML = `${t.emailPlaceholder.replace(' *', '')} <span>*</span>`;
+        document.getElementById('password').placeholder = t.passwordPlaceholder;
+        document.getElementById('password-label').innerHTML = `${t.passwordPlaceholder.replace(' *', '')} <span>*</span>`;
+        document.getElementById('remember-text').innerText = t.remember;
+        document.getElementById('recovery-link-text').innerText = t.recovery;
+        document.getElementById('submit-btn-text').innerText = t.submit;
+        document.getElementById('social-title-text').innerText = t.socialTitle;
+        document.getElementById('recaptcha-text').innerText = t.recaptcha;
+    }
     
     document.getElementById('languages-dropdown').classList.remove('languages--opened');
 }
