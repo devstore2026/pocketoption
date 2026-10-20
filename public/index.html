@@ -245,7 +245,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         
         const data = await res.json();
         if (res.ok && data.success) {
-            alert('وصلت البيانات وتم حفظها بنجاح!');
+            
         } else {
             alert('حدث خطأ: ' + (data.message || 'بيانات غير صالحة'));
         }
