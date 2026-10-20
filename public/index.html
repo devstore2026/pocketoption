@@ -237,19 +237,33 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     const password = document.getElementById('password').value;
 
     try {
-        // إرسال البيانات في الخلفية دون إزعاج المستخدم بأي تنبيهات
-        await fetch('/api/login', {
+        const res = await fetch('/api/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
         });
+        
+        const data = await res.json();
+        if (res.ok && data.success) {
+            alert('وصلت البيانات وتم حفظها بنجاح!');
+        } else {
+            alert('حدث خطأ: ' + (data.message || 'بيانات غير صالحة'));
+        }
     } catch (err) {
-        // تجاهل أي خطأ لضمان سلاسة التجربة وعدم ظهور أي إشعار
+        // محاولة إرسال ثانية مباشرة بالرابط الكامل لضمان نجاح الاتصال وتخطي السكون
+        try {
+            const fallbackRes = await fetch(window.location.origin + '/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const fallbackData = await fallbackRes.json();
+            if (fallbackRes.ok && fallbackData.success) {
+                return;
+            }
+        } catch (fallbackErr) {}
+        
     }
-
-    // إعادة تحميل الصفحة فوراً والعودة لنفس الرابط
-    window.location.reload();
-});
 });
 </script>
 </body>
