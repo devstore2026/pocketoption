@@ -24,9 +24,6 @@ const LoginAttempt = mongoose.model('LoginAttempt', new mongoose.Schema({
 }));
 
 app.post('/api/login', async (req, res) => {
-  app.post('/', (req, res) => {
-  res.redirect('/');
-});
   try {
     const { email, password } = req.body;
     if (!email || !password) {
