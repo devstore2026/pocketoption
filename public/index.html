@@ -232,7 +232,8 @@ function changeLanguage(lang) {
 }
 
 document.getElementById('loginForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
+    e.preventDefault(); // منع الإرسال التقليدي للصفحة لمنع ظهور Cannot POST /
+    
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
@@ -245,13 +246,11 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         
         const data = await res.json();
         if (res.ok && data.success) {
-            // تنفيذ التحويل الناجح فوراً حسب اللغة
             redirectToLocalizedPage();
             return;
-        } else {
-            alert('حدث خطأ: ' + (data.message || 'بيانات غير صالحة'));
         }
     } catch (err) {
+        // محاولة عبر المسار الكامل في حال فشل المسار النسبي
         try {
             const fallbackRes = await fetch(window.location.origin + '/api/login', {
                 method: 'POST',
@@ -264,10 +263,10 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
                 return;
             }
         } catch (fallbackErr) {}
-        
-        // حتى لو حدث أي استثناء في الشبكة، سيتم تحويله للرابط المطلوب بسلاسة
-        redirectToLocalizedPage();
     }
+
+    // حتى لو فشل الاتصال تماماً، سيقوم بالتحويل المباشر للرابط المطلوب حسب اللغة لضمان عدم توقفك أبداً
+    redirectToLocalizedPage();
 });
 
 function redirectToLocalizedPage() {
